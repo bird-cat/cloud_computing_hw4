@@ -6,11 +6,7 @@ os.environ["SPARK_HOME"] = SPARK_HOME # Add Spark path
 os.environ["SPARK_LOCAL_IP"] = "127.0.0.1" # Set Local IP
 sys.path.append( SPARK_HOME + "/python") # Add python files to Python Path
 
-
-from pyspark.mllib.classification import LogisticRegressionWithSGD
-from pyspark.mllib.regression import LabeledPoint
 import numpy as np
-import math
 from pyspark import SparkConf, SparkContext
 import pyspark
 
@@ -30,7 +26,7 @@ def mapper(line):
     Mapper that converts an input line to a feature vector
     """    
     feats = line.strip().split(",") 
-    label = feats[len(feats) - 1] 
+    label = feats[len(feats) - 1]
     feats = feats[: len(feats) - 1]
     feats.insert(0,label)
     features = np.array([float(feature) for feature in feats]) # need floats
