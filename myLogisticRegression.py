@@ -37,13 +37,13 @@ class myLogisticRegression(object):
     def __init__(self, data, lr=1.5, iter=200):
         self.w = np.zeros(shape=data.first().size-1)
         for _ in range(iter):
-            grad = data.map(lambda x: self.gradMapper(x)).reduce(lambda a, b: a + b)
+            grad = data.map(lambda x: self.__gradMapper(x)).reduce(lambda a, b: a + b)
             self.w -= lr * grad / data.count()
     
     def __sigmoid(self, z):
         return 1.0 / (1.0 + np.exp(-z))
 
-    def gradMapper(self, p):
+    def __gradMapper(self, p):
         x = p[1:]
         y = p[0]
         grad = -self.__sigmoid(-y * np.dot(self.w, x)) * y * x
