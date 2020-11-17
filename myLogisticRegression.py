@@ -27,15 +27,17 @@ def mapper(line):
     """    
     feats = line.strip().split(",") 
     label = feats[len(feats) - 1]
-    feats = feats[: len(feats) - 1]
+    feats = [1.0] + feats[: len(feats) - 1]
     feats.insert(0,label)
     features = np.array([float(feature) for feature in feats]) # need floats
+    if features[0] == 0.0:
+        features[0] = -1.0
     return features
 
 
 class myLogisticRegression(object):
-    def __init__(self, data, lr=1.5, iter=200):
-        self.w = np.zeros(shape=data.first().size-1)
+    def __init__(self, data, lr=1.5, iter=500):
+        self.w = np.zeros(shape=data.first().size - 1)
         for _ in range(iter):
             grad = data.map(lambda x: self.__gradMapper(x)).reduce(lambda a, b: a + b)
             self.w -= lr * grad / data.count()
@@ -60,15 +62,12 @@ data = sc.textFile("gs://r09922114-bucket/data_banknote_authentication.txt")
 parsedData = data.map(mapper)
 
 # Train model
-model = myLogisticRegression(parsedData, 2.0, 500)
+model = myLogisticRegression(parsedData, 1.5, 300)
 
 # Predict the first elem will be actual data and the second 
 # item will be the prediction of the model
-labelsAndPreds = parsedData.map(lambda point: (int(point[0]), 
-        round(model.predict(point[1:]))))
 
-# Evaluating the model on training data
-trainErr = labelsAndPreds.filter(lambda (v, p): v != p).count() / float(parsedData.count())
+trainErr = parsedData.filter(lambda point: np.sign(int(point[0])) != np.sign(round(model.predict(point[1:])) - 0.5)).count() / float(parsedData.count())
 
 # Print some stuff
 print("Training Error = " + str(trainErr))
