@@ -67,7 +67,7 @@ model = myLogisticRegression(parsedData, 1.5, 300)
 # Predict the first elem will be actual data and the second 
 # item will be the prediction of the model
 
-trainErr = parsedData.filter(lambda point: np.sign(int(point[0])) != np.sign(round(model.predict(point[1:])) - 0.5)).count() / float(parsedData.count())
+trainErr = parsedData.filter(lambda point: np.sign(int(point[0])) != np.sign(model.predict(point[1:])) - 0.5).count() / float(parsedData.count())
 
 # Print some stuff
 print("Training Error = " + str(trainErr))
